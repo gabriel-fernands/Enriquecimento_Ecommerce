@@ -1,0 +1,68 @@
+
+spring:
+  jpa:
+    show-sql: true
+    generate-ddl: false
+    #database-platform: org.hibernate.dialect.Oracle12cDialect
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+          database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+        dialect: org.hibernate.dialect.OracleDialect
+        format_sql: true
+  kafka:
+    bootstrap-servers:   kafka-0:9092 #,kafka-1:9092,kafka-2:9092
+    topic: ${INGEST_TOPIC_EVENTS_TARGET:enrichedTopic}
+    consumer:
+      consumer:
+        bootstrap-servers:
+          - localhost:9092
+        group-id: group_id
+        auto-offset-reset: earliest
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+      producer:
+        bootstrap-servers:
+          - localhost:9092
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+  #      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  #     value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  #    group-id: group_id
+
+  #  h2:
+  #    console:
+  #      enabled: true
+  #      path: /h2-console
+
+  datasource:
+    primary:
+      jdbc-url: jdbc:oracle:thin:@ec2-54-224-86-25.compute-1.amazonaws.com:1521:ORCLCDB
+      #jdbc-url: jdbc:oracle:thin:@localhost:1521:ORCLCDB
+      username: INTERNET
+      #password: homolog654#
+      password: q1w2e3r4
+      driverClassName: oracle.jdbc.OracleDriver
+    secondary:
+      jdbc-url: jdbc:postgresql://ec2-54-224-86-25.compute-1.amazonaws.com:1522/db_camp
+      username: internet
+      password: q1w2e3r4
+      driverClassName: org.postgresql.Driver
+      oracleucp:
+        connection-factory-class-name: oracle.jdbc.pool.OracleDataSource
+        connection-pool-name: EcommerceIntegrationCampaign
+        initial-pool-size: 15
+        min-pool-size: 10
+        max-pool-size: 30
+
+ingest:
+  event-type: ${INGEST_EVENT_TYPE:CAM}
+logging:
+  level:
+    com.zaxxer.hikari: DEBUG
+    org.springframework.boot.autoconfigure.jdbc: DEBUG
